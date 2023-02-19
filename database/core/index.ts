@@ -22,7 +22,7 @@ const createIndex: CreateIndex = (blockData: BlockData): Index => {
         if(!index[length][d][c]) index[length][d][c] = []
 
         if(lastChar !== c && lastChar) {
-          index[length][d][lastChar].push([start, i-1]);
+          index[length][d][lastChar].push(start === i-1 ? start : [start, i-1]);
           start = i;
         }
 

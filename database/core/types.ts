@@ -1,5 +1,5 @@
 // Index Structure
-export type Range = [number,number];
+export type Range = [number,number] | number;
 
 interface LetterRange {
   [letter: string]: Range[];

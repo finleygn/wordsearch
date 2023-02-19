@@ -2,6 +2,25 @@ import { BlockData, Index, Range, SearchQuery } from "../core/types.ts";
 
 export type Search = (index: Index, data: BlockData, query: SearchQuery) => string[]
 
+/**
+ * Ideas for speedup,
+ * - stop going over ranges when bigger than max of last result
+ * - binary search ranges?
+ */
+const fromRange = (range: Range): [number,number] => {
+  if(Array.isArray(range)) {
+    return range;
+  }
+  return [range,range]
+}
+
+const inBoundary = (r1: Range, r2: Range): boolean => {
+  const rf1 = fromRange(r1);
+  const rf2 = fromRange(r2);
+
+  return rf1[1] >= rf2[0] && rf1[1] <= rf2[1]
+}
+
 const search: Search = (index, data, query) => {
   const length = query.length;
   const indexArea = index[length];
@@ -18,7 +37,7 @@ const search: Search = (index, data, query) => {
     if(within.length) {
       // reduce possible ranges, based on the new range being in the previous
       ranges = ranges.filter(
-        range => within.some(boundary =>  range[0] >= boundary[0] && range[1] <= boundary[1])
+        range => within.some(boundary => inBoundary(range, boundary))
       )
     }
 
@@ -28,8 +47,9 @@ const search: Search = (index, data, query) => {
 
   return result[result.length-1].map(r => {
     const out: string[] = [];
+    const r2 = fromRange(r)
     
-    for(let i = r[0]; i <= r[1]; i++) {
+    for(let i = r2[0]; i <= r2[1]; i++) {
       out.push(data[length][i])
     }
 

@@ -14,8 +14,8 @@ const flags = parse(Deno.args, {
 });
 
 const databaseClient = new DatabaseClient(
-  join(flags.words, "index.wd"),
-  join(flags.words, "block.wd"),
+  join(flags.words, "index"),
+  join(flags.words, "block"),
 );
 
 try {
