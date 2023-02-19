@@ -28,10 +28,11 @@ For example, for 3 letter words, there will be a mapping for a-z at each postion
 #### No wildcards
 
 Searching for the word "and" gives us the following index entries (on `.wordlist200k`)
-
+```
 a: [[0,87]]
 n: [[45,52],257,[320,322],445,[555,559],761,[823,824],[878,880],[1108,1109],1198,[1249,1253],1330]
 d: [12,23,46,57,90,103,...too many]
+```
 
 these are a list of indexes (ranges and single indexes) for possible words that character could be part of.
 taking a union of all of these characters gives us
