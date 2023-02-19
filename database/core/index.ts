@@ -13,7 +13,7 @@ const createIndex: CreateIndex = (blockData: BlockData): Index => {
     for(let d = 0; d < length; d++) {
       index[length][d] = {};
 
-      let lastChar: string = ""
+      let lastChar = ""
       let start = 0;
 
       for(const [i,w] of words.entries()) {

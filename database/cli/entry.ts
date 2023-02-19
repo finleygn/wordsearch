@@ -1,4 +1,3 @@
-// This cli needs to be able to create block data and index from source wordlist
 import { parse } from "https://deno.land/std@0.175.0/flags/mod.ts";
 import { readLines } from "https://deno.land/std@0.175.0/io/mod.ts";
 import * as fs from "https://deno.land/std@0.177.0/fs/mod.ts";
@@ -12,8 +11,6 @@ const flags = parse(Deno.args, {
     outdir: "./words"
   },
 });
-
-console.log(path.join(flags.outdir, "index.wd"))
 
 async function getReader() {
   let reader

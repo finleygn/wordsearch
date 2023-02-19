@@ -6,8 +6,9 @@ const search: Search = (index, data, query) => {
   const length = query.length;
   const indexArea = index[length];
   
-  let within: Range[] = [];
-  const result = []
+  // presume all words
+  let within: Range[] = [[0, Infinity]];
+  const result = [];
 
   for(const [depth,letter] of query.entries()) {
     if(!letter) continue;
@@ -15,7 +16,10 @@ const search: Search = (index, data, query) => {
     let ranges = indexArea[depth][letter];
 
     if(within.length) {
-      ranges = ranges.filter(range => within.some(boundary =>  range[0] >= boundary[0] && range[1] <= boundary[1]))
+      // reduce possible ranges, based on the new range being in the previous
+      ranges = ranges.filter(
+        range => within.some(boundary =>  range[0] >= boundary[0] && range[1] <= boundary[1])
+      )
     }
 
     within = ranges;
