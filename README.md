@@ -2,7 +2,7 @@
 
 A word finding tool for listing all possible words given known and wildcard letters. For example searching `he*p` will return `[heap,help,hemp]`.
 
-Not sure whats it's purpose is but can be helpful for wordle or crosswords. The indexing/search algorithm is made up by myself, I am certain something similar exists already and I have reinvented the wheel, but I'm not sure what it's called. 
+Not sure whats it's purpose is but can be helpful for wordle or crosswords. The indexing/search algorithm is made up by myself, I am certain something similar exists already and I have reinvented the wheel, but know next to nothing about database internals and I'm not sure what it's called :). 
 
 ## Benchmarks
 
@@ -39,7 +39,7 @@ taking a union of all of these characters gives us
 
 `0,87` -> `45,52` -> `46`
 
-and the 46th letter in the wordlist is `and`.
+and the 46th index in the wordlist is `and`.
 
 #### With wildcards
 
