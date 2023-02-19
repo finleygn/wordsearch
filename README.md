@@ -6,6 +6,9 @@ No dependencies outside of the Deno standard library :)
 
 Can look through ~200k words and find matches with 10 wildcard characters within 0.14ms. (See `/database/benchmark`, still need to verify this works as intended)
 
+![First example](./doc/example.png)
+![Second example](./doc/example2.png)
+
 ## Database
 
 Contains a CLI for building indexes
