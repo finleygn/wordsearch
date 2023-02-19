@@ -4,6 +4,8 @@ A word finding tool for listing all possible words given known and missing lette
 
 Not sure whats it's purpose is but can be helpful for wordle or crosswords. The indexing/search algorithm is made up by myself, I am certain something similar exists already and I have reinvented the wheel, but know next to nothing about database internals and I'm not sure what it's called :). 
 
+You create your own searchable wordlists using the cli in `./database/cli`
+
 ## Benchmarks
 
 Can look through ~200k words and find matches with 10 wildcard characters within 0.14ms. (See `/database/benchmark`, still need to verify this works as intended)
