@@ -46,7 +46,6 @@ if(!blockDataExists) {
   input.close();
 }
 
-
 const raw = await Deno.readTextFile("block.json");
 const data = JSON.parse(raw);
 
