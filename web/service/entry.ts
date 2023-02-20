@@ -3,7 +3,7 @@ import { parse } from "https://deno.land/std@0.175.0/flags/mod.ts";
 import { join } from "https://deno.land/std@0.177.0/path/mod.ts";
 import defaultConfig from "./config.ts";
 import createApp from "./app.ts";
-import DatabaseClient from "../database/client/client.ts";
+import { DatabaseClient } from "../../database/main.ts";
 
 const flags = parse(Deno.args, {
   string: ["port", "words"],

@@ -24,6 +24,8 @@ const inBoundary = (r1: Range, r2: Range): boolean => {
 const search: Search = (index, data, query) => {
   const indexArea = index[query.length];
 
+  if(!data[query.length]) return [];
+
   // Current possible words
   let bounds: Range[] = [
     [0, data[query.length].length]
@@ -58,7 +60,7 @@ const search: Search = (index, data, query) => {
 
   for(const bound of bounds) {
     if(Array.isArray(bound)) {
-      out = out.concat(data[query.length].slice(bound[0], bound[1]+1))
+      out = out.concat(data[query.length].slice(bound[0]+1, bound[1]+1))
     } else {
       out = out.concat(data[query.length].slice(bound, bound+1))
     }

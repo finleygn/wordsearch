@@ -1,4 +1,4 @@
-import DatabaseClient from "../database/client/client.ts";
+import { DatabaseClient } from "../../database/main.ts";
 import { validateInput } from "./util/validateInput.ts";
 
 interface IAppServices {
@@ -20,7 +20,7 @@ function handler(request: Request, services: IAppServices) {
       content.split("").map(c => c === "*" ? null : c)
     );
 
-    return new Response(JSON.stringify(result), { status: 200 });
+    return new Response(JSON.stringify(result), {status: 200 });
   }
 
   return new Response(null, { status: 404 });
@@ -28,7 +28,12 @@ function handler(request: Request, services: IAppServices) {
 
 function createApp(services: IAppServices) {
   return (request: Request) => {
-    return handler(request, services)
+    const response = handler(request, services);
+
+    response.headers.set("Content-Type", "application/json");
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    
+    return response;
   }
 }
 
