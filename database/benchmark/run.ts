@@ -114,7 +114,7 @@ async function run() {
   }
 
   await Deno.writeTextFile(
-    path.join(directory.results, `${benchmarkRun.version}.${benchmarkRun.time}.json`),
+    path.join(directory.results, `${benchmarkRun.time}--${benchmarkRun.version}.json`),
     JSON.stringify(benchmarkRun, null, 2)
   )
 }

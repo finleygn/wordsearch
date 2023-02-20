@@ -4,9 +4,9 @@ export type Search = (index: Index, data: BlockData, query: SearchQuery) => stri
 
 /**
  * Ideas for speedup,
- * - stop going over ranges when bigger than max of last result
  * - binary search ranges?
  */
+
 const fromRange = (range: Range): [number,number] => {
   if(Array.isArray(range)) {
     return range;
@@ -22,39 +22,49 @@ const inBoundary = (r1: Range, r2: Range): boolean => {
 }
 
 const search: Search = (index, data, query) => {
-  const length = query.length;
-  const indexArea = index[length];
-  
-  // presume all words
-  let within: Range[] = [[0, Infinity]];
-  const result = [];
+  const indexArea = index[query.length];
 
-  for(const [depth,letter] of query.entries()) {
-    if(!letter) continue;
+  // Current possible words
+  let bounds: Range[] = [
+    [0, data[query.length].length]
+  ];
+
+  // Reduce bounds based on each query entry
+  for(const [position, character] of query.entries()) {
+    // Is ambiguous
+    if(!character) continue;
+
+    // There are no available words for this character.
+    if(
+      !indexArea[position][character] ||
+      !indexArea[position][character].length
+    ) return [];
+
+    // Select possible ranges
+    let ranges = indexArea[position][character];
     
-    let ranges = indexArea[depth][letter];
+    // Remove any ranges outside of boundaries (this is inefficient)
+    ranges = ranges.filter(
+      range => bounds.some(boundary => inBoundary(range, boundary))
+    )
 
-    if(within.length) {
-      // reduce possible ranges, based on the new range being in the previous
-      ranges = ranges.filter(
-        range => within.some(boundary => inBoundary(range, boundary))
-      )
-    }
-
-    within = ranges;
-    result.push(ranges);
+    // If no ranges available return nothing
+    if(!ranges.length) return [];
+    else bounds = ranges;
   }
 
-  return result[result.length-1].map(r => {
-    const out: string[] = [];
-    const r2 = fromRange(r)
-    
-    for(let i = r2[0]; i <= r2[1]; i++) {
-      out.push(data[length][i])
-    }
+  // Retrieve indexes from data
+  let out: string[] = [];
 
-    return out;
-  }).flat();
+  for(const bound of bounds) {
+    if(Array.isArray(bound)) {
+      out = out.concat(data[query.length].slice(bound[0], bound[1]+1))
+    } else {
+      out = out.concat(data[query.length].slice(bound, bound+1))
+    }
+  }
+
+  return out;
 }
 
 export default search;
