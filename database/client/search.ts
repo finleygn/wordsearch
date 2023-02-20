@@ -33,7 +33,6 @@ const search: Search = (index, data, query) => {
 
   // Reduce bounds based on each query entry
   for(const [position, character] of query.entries()) {
-    // Is ambiguous
     if(!character) continue;
 
     // There are no available words for this character.

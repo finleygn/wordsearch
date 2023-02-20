@@ -1,8 +1,9 @@
 import { Server } from "https://deno.land/std@0.177.0/http/server.ts";
 import { parse } from "https://deno.land/std@0.175.0/flags/mod.ts";
-import { join } from "https://deno.land/std@0.177.0/path/mod.ts";
+
 import defaultConfig from "./config.ts";
 import createApp from "./app.ts";
+import DataLoader from "./dataLoader.ts";
 import { DatabaseClient } from "../../database/main.ts";
 
 const flags = parse(Deno.args, {
@@ -13,22 +14,14 @@ const flags = parse(Deno.args, {
   },
 });
 
-const databaseClient = new DatabaseClient(
-  join(flags.words, "index"),
-  join(flags.words, "block"),
-);
-
-try {
-  await databaseClient.connect();
-} catch(e) {
-  console.error("Failed to setup database, local files not found.");
-  throw e;
-}
+const dataLoader = new DataLoader(flags.words);
+await dataLoader.setup();
+await dataLoader.connect();
 
 const server = new Server({
   port: Number(flags.port),
   handler: createApp({
-    client: databaseClient
+    clients: dataLoader.getClients()
   })
 });
 

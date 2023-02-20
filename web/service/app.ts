@@ -1,34 +1,60 @@
 import { DatabaseClient } from "../../database/main.ts";
 import { validateInput } from "./util/validateInput.ts";
+import Router, { Method } from './util/router.ts';
+import BadRequestError from './errors/BadRequest.ts';
 
 interface IAppServices {
-  client: DatabaseClient,
+  clients: Record<string, DatabaseClient>,
 }
 
-function handler(request: Request, services: IAppServices) {
-  if(request.method === "GET") {
+const router = new Router<IAppServices>();
+
+router.route(
+  Method.GET,
+  "/",
+  (request, services) => {
     const url = new URL(request.url);
-    const content = url.searchParams.get("w") as string;
 
-    try {
-      validateInput(content);
-    } catch(e) {
-      return new Response(JSON.stringify({ error: e.message }), { status: 400 })
-    }
+    const word = url.searchParams.get("word") as string;
+    const dataset = url.searchParams.get("dataset") as string;
     
-    const result = services.client.search(
-      content.split("").map(c => c === "*" ? null : c)
+    if(!word) throw new BadRequestError("No word given");
+    if(!dataset) throw new BadRequestError("No dataset given");
+
+    if(!validateInput(word)) throw new BadRequestError("Invalid word");
+    if(!services.clients[dataset]) throw new BadRequestError("No dataset by this name");
+
+    performance.mark('ms');
+    const result = services.clients[dataset].search(
+      word.split("").map(c => c === "*" ? null : c)
     );
+    performance.mark('me');
 
-    return new Response(JSON.stringify(result), {status: 200 });
+    return new Response(JSON.stringify({
+      result,
+      meta: {
+        took: performance.measure('_', 'ms', 'me').duration
+      }
+    }), { status: 200 })
   }
+)
 
-  return new Response(null, { status: 404 });
-}
+router.route(
+  Method.GET,
+  "/dataset",
+  (_, services) => {
+    const names = Object.keys(services.clients)
+    return new Response(
+      JSON.stringify(names),
+      { status: 200 }
+    );
+  }
+)
+
 
 function createApp(services: IAppServices) {
-  return (request: Request) => {
-    const response = handler(request, services);
+  return async (request: Request) => {
+    const response = await router.handle(request, services);
 
     response.headers.set("Content-Type", "application/json");
     response.headers.set("Access-Control-Allow-Origin", "*");
