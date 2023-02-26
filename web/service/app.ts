@@ -24,10 +24,11 @@ router.route(
     if(!validateInput(word)) throw new BadRequestError("Invalid word");
     if(!services.clients[dataset]) throw new BadRequestError("No dataset by this name");
 
+    const service = services.clients[dataset];
+    const query = word.split("").map(c => c === "*" ? null : c)
+
     performance.mark('ms');
-    const result = services.clients[dataset].search(
-      word.split("").map(c => c === "*" ? null : c)
-    );
+    const result = service.search(query);
     performance.mark('me');
 
     return new Response(JSON.stringify({
@@ -43,9 +44,9 @@ router.route(
   Method.GET,
   "/dataset",
   (_, services) => {
-    const names = Object.keys(services.clients)
+    const data = Object.values(services.clients).map(c => c.getMeta());
     return new Response(
-      JSON.stringify(names),
+      JSON.stringify(data),
       { status: 200 }
     );
   }

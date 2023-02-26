@@ -22,6 +22,7 @@ const createIndex: CreateIndex = (blockData: BlockData): Index => {
         if(!index[length][d][c]) index[length][d][c] = []
 
         if(lastChar !== c && lastChar) {
+          // could reduce the size of this by storing the first index then the diff?
           index[length][d][lastChar].push(start === i-1 ? start : [start, i-1]);
           start = i;
         }

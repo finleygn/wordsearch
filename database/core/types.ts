@@ -18,6 +18,12 @@ export interface BlockData {
   [letterCount: number]: string[];
 }
 
+// Meta data
+export interface MetaData {
+  name: string;
+  words: number;
+}
+
 // Search
 export type Constraint = string | null
 export type SearchQuery = Constraint[];

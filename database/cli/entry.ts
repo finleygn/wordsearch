@@ -6,9 +6,10 @@ import createBlockData from '../core/blockData.ts';
 import createIndex from '../core/index.ts';
 
 const flags = parse(Deno.args, {
-  string: ["words", "outdir"],
+  string: ["words", "outdir", "name"],
   default: {
-    outdir: "./words"
+    outdir: "./words",
+    name: "dictionary"
   },
 });
 
@@ -39,10 +40,16 @@ const words = await readWords();
 const blockData = createBlockData(words);
 const index = createIndex(blockData);
 
+const meta = {
+  name: flags.name,
+  words: words.length
+}
+
 await fs.ensureDir(flags.outdir);
 await Promise.all([
   Deno.writeTextFile(path.join(flags.outdir, "block"), JSON.stringify(blockData)),
   Deno.writeTextFile(path.join(flags.outdir, "index"), JSON.stringify(index)),
+  Deno.writeTextFile(path.join(flags.outdir, "meta.json"), JSON.stringify(meta, null,2)),
 ]);
 
 console.log("Created index & block data.");

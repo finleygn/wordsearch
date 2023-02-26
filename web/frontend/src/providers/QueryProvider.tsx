@@ -1,45 +1,50 @@
-import React, { useContext, useEffect, useMemo, useReducer, useState } from "react"
-import { useLocation } from "react-router-dom";
+import React, { useCallback, useContext, useEffect, useMemo, useReducer, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom";
+import useDatasets from "../hooks/useDatasets";
+import useSyncedQueryParams from "../hooks/useSyncedQueryParams";
+import useWords from "../hooks/useWords";
 
 interface IQueryContext {
-  characters: string[],
-  results: string[],
-  status: "idle" | "loading" | "error" | "success"
+  params: {
+    word: string,
+    dataset: string,
+  }
+  datasets: ReturnType<typeof useDatasets>,
+  words: ReturnType<typeof useWords>,
+  query: (word: string, dataset: string) => void;
 }
 
 const queryContext = React.createContext<IQueryContext>({} as IQueryContext)
 
 function QueryProvider({ children }: React.PropsWithChildren) {
-  const location = useLocation()
+  const queryParams = useSyncedQueryParams(['w','d']);
 
-  const query = new URLSearchParams(location.search);
-  const word = query.get("w");
+  const wordP = queryParams.params.w;
+  const datasetP = queryParams.params.d;
 
-  const [state, setState] = useState<IQueryContext>({
-    characters: word?.split("") || [],
-    results: [],
-    status: word ? 'idle' : 'loading'
-  });
+  const datasets = useDatasets();
+  const words = useWords(
+    wordP,
+    datasetP,
+  );
 
-  useEffect(() => {
-    setState(s => ({
-      ...s,
-      characters: word?.split("") || [],
-      status: word ? 'idle' : 'loading'
-    }));
-
-    fetch("http://127.0.0.1:8000?w=" + word)
-      .then(async (response) => {
-        const data = await response.json()
-        setState((s) => ({ ...s, results: data, status: 'success' }))
-      })
-      .catch(() => {
-        setState((s) => ({ ...s, status: 'error' }))
-      })
-  }, [word]);
+  const query = useCallback((word: string, dataset: string) => {
+    queryParams.sync({
+      w: word,
+      d: dataset,
+    });
+  }, []);
 
   return (
-    <queryContext.Provider value={state}>
+    <queryContext.Provider value={{
+      params: {
+        word: wordP,
+        dataset: datasetP,
+      },
+      query,
+      datasets,
+      words,
+    }}>
       {children}
     </queryContext.Provider>
   )

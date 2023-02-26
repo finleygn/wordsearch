@@ -4,7 +4,6 @@ import { parse } from "https://deno.land/std@0.175.0/flags/mod.ts";
 import defaultConfig from "./config.ts";
 import createApp from "./app.ts";
 import DataLoader from "./dataLoader.ts";
-import { DatabaseClient } from "../../database/main.ts";
 
 const flags = parse(Deno.args, {
   string: ["port", "words"],

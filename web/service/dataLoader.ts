@@ -22,7 +22,8 @@ class DataLoader {
 
         this.clients[entry.name] = new DatabaseClient(
           join(this.dir, entry.name, "index"),
-          join(this.dir, entry.name, "block")
+          join(this.dir, entry.name, "block"),
+          join(this.dir, entry.name, "meta.json")
         )
       }
     }
